@@ -3,7 +3,6 @@ using UnityEngine.SceneManagement;
 
 public class StageSave : MonoBehaviour
 {
-
     private void Start()
     {
         int numeroCena = SceneManager.GetActiveScene().buildIndex;
@@ -11,5 +10,4 @@ public class StageSave : MonoBehaviour
         PlayerPrefs.SetInt("faseSalva", numeroCena);
         PlayerPrefs.Save();
     }
-
 }
