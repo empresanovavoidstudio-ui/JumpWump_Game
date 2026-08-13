@@ -8,6 +8,8 @@ public class StageSave : MonoBehaviour
     {
         int numeroCena = SceneManager.GetActiveScene().buildIndex;
         Debug.Log("Número da cena atual: " + numeroCena);
+        PlayerPrefs.SetInt("faseSalva", numeroCena);
+        PlayerPrefs.Save();
     }
 
 }
