@@ -31,8 +31,19 @@ public class GerenciadorCenas : MonoBehaviour
 
     public void IrParaSelecaoFases()
     {
-        SceneManager.LoadScene("Stages");
+        SceneManager.LoadScene("SelecaoFases");
     }
+
+    public void  IrParaCenaOpcoes()
+    {
+        SceneManager.LoadScene("CenaOpcoes");
+    }
+
+    public void IrParaTutorial()
+    {
+        SceneManager.LoadScene("Tutorial");
+    }
+
 
     
     public void ProximaCena()

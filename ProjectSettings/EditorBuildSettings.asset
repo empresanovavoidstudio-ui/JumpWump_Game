@@ -32,6 +32,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Level 3.unity
     guid: 23860d920213c6c42aef35c5a7f92797
+  - enabled: 1
+    path: Assets/Scenes/CenaOpcoes.unity
+    guid: 0eea3f36b21d9da45a5c60772b9b7fe0
+  - enabled: 1
+    path: Assets/Scenes/SelecaoFases.unity
+    guid: 91c749a5e95f1ae4598596392f6d986c
+  - enabled: 1
+    path: Assets/Scenes/FaseTutorial.unity
+    guid: 975fc7c714ea76242a9e7e85abd70e49
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
