@@ -72,7 +72,6 @@ public class Wump : MonoBehaviour
             physicsPlayer.linearVelocity.y
         );
 
-        // ANIMAÇÃO
         if (moveX != 0)
         {
             animator.SetBool("isWalking", true);
@@ -82,7 +81,6 @@ public class Wump : MonoBehaviour
             animator.SetBool("isWalking", false);
         }
 
-        // VIRAR O PLAYER
         if (moveX > 0)
         {
             transform.localScale = new Vector3(1, 1, 1);
