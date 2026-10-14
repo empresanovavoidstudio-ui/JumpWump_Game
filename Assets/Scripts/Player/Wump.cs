@@ -1,107 +1,175 @@
+
 using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class Wump : MonoBehaviour
 {
     [Header("Movimento")]
-    public float jump = 8f;
+    public float jump = 12f;
     public float speed = 10f;
 
-    private Rigidbody2D physicsPlayer;
-    private Vector2 move;
-
-    [Header("Animação")]
-    private Animator animator;
-
-    [Header("Estado")]
-    private bool isGrounded = true;
-    private bool isWumping = false;
-    private bool canWump = true;
-
     [Header("Dash")]
-    private bool canDash = true;
-    private bool isDashing = false;
-    private float dashTime = 0.2f;
-    private float dashPower = 24f;
-    private float dashCooldown = 1f;
+    public float dashTime = 0.2f;
+    public float dashPower = 24f;
+    public float dashCooldown = 1f;
 
     [Header("WUMP")]
     public float wumpPower = 20f;
+    public float tempoWump = 0.8f;
+    public float tempoRecargaWump = 0.5f;
+
+    [Header("Gravidade")]
+    public float gravidadeNormal = 3f;
+
+    [Header("Verificação do chão")]
+    [SerializeField] private Transform verificadorDeChao;
+    [SerializeField] private float raioChao = 0.15f;
+    [SerializeField] private LayerMask camadasDeChao;
+
+    [Header("Animação")]
+    [SerializeField] private Animator animator;
+    [SerializeField] private SpriteRenderer sprite;
+    [SerializeField] private bool spriteOlhaParaDireita = true;
 
     [Header("Efeito do Dash")]
     [SerializeField] private TrailRenderer tr;
 
-    void Start()
+    private Rigidbody2D physicsPlayer;
+
+    private float movimentoHorizontal;
+    private bool isGrounded;
+    private bool isDashing;
+    private bool canDash = true;
+    private bool isWumping;
+    private bool canWump = true;
+    private bool controleAtivo = true;
+
+    private void Awake()
     {
         physicsPlayer = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
+
+        if (animator == null)
+            animator = GetComponent<Animator>();
+
+        if (sprite == null)
+            sprite = GetComponent<SpriteRenderer>();
     }
 
-    void Update()
+    private void Start()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        physicsPlayer.gravityScale = gravidadeNormal;
+
+        if (tr != null)
+            tr.emitting = false;
+
+        AtualizarAnimacao();
+    }
+
+    private void Update()
+    {
+        VerificarChao();
+
+        if (!controleAtivo)
         {
-            JumpPlayer();
+            movimentoHorizontal = 0f;
+            AtualizarAnimacao();
+            return;
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftShift) && canDash && !isDashing)
+        movimentoHorizontal = Input.GetAxisRaw("Horizontal");
+
+        AtualizarDirecao();
+        AtualizarAnimacao();
+
+        if (Input.GetKeyDown(KeyCode.Space))
+            JumpPlayer();
+
+        if (Input.GetKeyDown(KeyCode.LeftShift)
+            && canDash && !isDashing && !isWumping)
         {
             StartCoroutine(Dash());
         }
 
-        if (Input.GetKeyDown(KeyCode.S) && canWump && !isGrounded && !isDashing)
+        if (Input.GetKeyDown(KeyCode.S)
+            && ProgressoWump.Desbloqueado
+            && canWump && !isGrounded && !isDashing)
         {
             StartCoroutine(WumpAttack());
         }
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        if (isDashing || isWumping)
+        if (!controleAtivo || isDashing || isWumping)
+            return;
+
+        Vector2 velocidade = physicsPlayer.linearVelocity;
+        velocidade.x = movimentoHorizontal * speed;
+        physicsPlayer.linearVelocity = velocidade;
+    }
+
+    private void AtualizarDirecao()
+    {
+        if (sprite == null || Mathf.Abs(movimentoHorizontal) < 0.01f)
+            return;
+
+        bool indoParaDireita = movimentoHorizontal < 0;
+
+        // Ajusta o FlipX considerando a direção original do sprite.
+        sprite.flipX = spriteOlhaParaDireita
+            ? !indoParaDireita
+            : indoParaDireita;
+    }
+
+    private void AtualizarAnimacao()
+    {
+        if (animator == null)
+            return;
+
+        bool andando =
+            controleAtivo &&
+            Mathf.Abs(movimentoHorizontal) > 0.01f &&
+            isGrounded &&
+            !isDashing &&
+            !isWumping;
+
+        animator.SetBool("isWalking", andando);
+    }
+
+    private void VerificarChao()
+    {
+        if (verificadorDeChao == null)
         {
-            animator.SetBool("isWalking", false);
+            isGrounded = false;
             return;
         }
 
-        float moveX = Input.GetAxisRaw("Horizontal");
-
-        move = new Vector2(moveX, 0).normalized;
-
-        physicsPlayer.linearVelocity = new Vector2(
-            move.x * speed,
-            physicsPlayer.linearVelocity.y
-        );
-
-        if (moveX != 0)
-        {
-            animator.SetBool("isWalking", true);
-        }
-        else
-        {
-            animator.SetBool("isWalking", false);
-        }
-
-        if (moveX > 0)
-        {
-            transform.localScale = new Vector3(1, 1, 1);
-        }
-        else if (moveX < 0)
-        {
-            transform.localScale = new Vector3(-1, 1, 1);
-        }
+        isGrounded = Physics2D.OverlapCircle(
+            verificadorDeChao.position,
+            raioChao,
+            camadasDeChao
+        ) != null;
     }
 
-    void JumpPlayer()
+    public void DefinirControle(bool ativo)
     {
-        if (isGrounded && !isDashing && !isWumping)
-        {
-            physicsPlayer.linearVelocity = new Vector2(
-                physicsPlayer.linearVelocity.x,
-                jump
-            );
+        controleAtivo = ativo;
+        movimentoHorizontal = 0f;
 
-            isGrounded = false;
-        }
+        if (physicsPlayer != null)
+            physicsPlayer.linearVelocity = Vector2.zero;
+
+        AtualizarAnimacao();
+    }
+
+    private void JumpPlayer()
+    {
+        if (!isGrounded || isDashing || isWumping)
+            return;
+
+        physicsPlayer.linearVelocity =
+            new Vector2(physicsPlayer.linearVelocity.x, jump);
     }
 
     private IEnumerator Dash()
@@ -109,35 +177,36 @@ public class Wump : MonoBehaviour
         canDash = false;
         isDashing = true;
 
-        animator.SetBool("isWalking", false);
-
-        float originalGravity = physicsPlayer.gravityScale;
-
+        float gravidadeAnterior = physicsPlayer.gravityScale;
         physicsPlayer.gravityScale = 0f;
 
-        physicsPlayer.linearVelocity = new Vector2(
-            transform.localScale.x * dashPower,
-            0f
-        );
+        float direcao = movimentoHorizontal;
+
+        if (Mathf.Abs(direcao) < 0.01f)
+        {
+            direcao = sprite != null && sprite.flipX
+                ? (spriteOlhaParaDireita ? -1f : 1f)
+                : (spriteOlhaParaDireita ? 1f : -1f);
+        }
 
         if (tr != null)
-        {
             tr.emitting = true;
-        }
+
+        physicsPlayer.linearVelocity =
+            new Vector2(direcao * dashPower, 0f);
+
+        AtualizarAnimacao();
 
         yield return new WaitForSeconds(dashTime);
 
         if (tr != null)
-        {
             tr.emitting = false;
-        }
 
-        physicsPlayer.gravityScale = originalGravity;
-
+        physicsPlayer.gravityScale = gravidadeAnterior;
+        physicsPlayer.linearVelocity = Vector2.zero;
         isDashing = false;
 
         yield return new WaitForSeconds(dashCooldown);
-
         canDash = true;
     }
 
@@ -146,57 +215,57 @@ public class Wump : MonoBehaviour
         canWump = false;
         isWumping = true;
 
-        animator.SetBool("isWalking", false);
-
-        float originalGravity = physicsPlayer.gravityScale;
-
+        float gravidadeAnterior = physicsPlayer.gravityScale;
         physicsPlayer.gravityScale = 0f;
-
         physicsPlayer.linearVelocity = Vector2.down * wumpPower;
 
-        yield return new WaitForSeconds(0.8f);
+        AtualizarAnimacao();
+
+        yield return new WaitForSeconds(tempoWump);
 
         if (isWumping)
         {
-            physicsPlayer.gravityScale = originalGravity;
+            physicsPlayer.gravityScale = gravidadeAnterior;
             isWumping = false;
         }
 
-        yield return new WaitForSeconds(0.5f);
-
+        yield return new WaitForSeconds(tempoRecargaWump);
         canWump = true;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (isWumping)
+        if (!isWumping)
+            return;
+
+        foreach (ContactPoint2D contato in collision.contacts)
         {
-            isWumping = false;
-
-            physicsPlayer.gravityScale = 3f;
-
-            WumpReceiver objetoWump =
-                collision.gameObject.GetComponent<WumpReceiver>();
-
-            if (objetoWump != null)
+            if (contato.normal.y > 0.5f)
             {
-                objetoWump.ReceberWump();
-            }
+                isWumping = false;
+                physicsPlayer.gravityScale = gravidadeNormal;
+                physicsPlayer.linearVelocity = Vector2.zero;
 
-            CameraFollow cameraFollow =
-                Camera.main.GetComponent<CameraFollow>();
+                WumpReceiver receptor =
+                    collision.gameObject.GetComponent<WumpReceiver>();
 
-            if (cameraFollow != null)
-            {
-                cameraFollow.Shake();
+                if (receptor != null)
+                    receptor.ReceberWump();
+
+                break;
             }
         }
-
-        isGrounded = true;
     }
 
-    private void OnCollisionExit2D(Collision2D collision)
+    private void OnDrawGizmosSelected()
     {
-        isGrounded = false;
+        if (verificadorDeChao == null)
+            return;
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(
+            verificadorDeChao.position,
+            raioChao
+        );
     }
 }
