@@ -129,7 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 230861452}
   - component: {fileID: 230861451}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Chao (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -221,9 +221,9 @@ GameObject:
   - component: {fileID: 295549262}
   - component: {fileID: 295549261}
   - component: {fileID: 295549260}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Chao2 (1)
-  m_TagString: Untagged
+  m_TagString: Chao
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -342,8 +342,8 @@ Transform:
   m_GameObject: {fileID: 295549259}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 21.6896, y: -9.585199, z: 0}
-  m_LocalScale: {x: 24.41828, y: 0.87387204, z: 1}
+  m_LocalPosition: {x: 28.1225, y: -9.585199, z: 0}
+  m_LocalScale: {x: 37.28427, y: 0.87387204, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -509,7 +509,7 @@ GameObject:
   m_Component:
   - component: {fileID: 437033309}
   - component: {fileID: 437033308}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Chao (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -600,7 +600,7 @@ GameObject:
   m_Component:
   - component: {fileID: 590210611}
   - component: {fileID: 590210610}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Chao (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -843,7 +843,7 @@ Transform:
   m_GameObject: {fileID: 1229320260}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -16.86, y: -8.67, z: -4.6307}
+  m_LocalPosition: {x: -16.81, y: -8.67, z: -4.6307}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -876,7 +876,7 @@ MonoBehaviour:
   raioChao: 0.15
   camadasDeChao:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 8
   animator: {fileID: 1229320266}
   sprite: {fileID: 1229320263}
   spriteOlhaParaDireita: 1
@@ -945,9 +945,9 @@ GameObject:
   - component: {fileID: 1264438803}
   - component: {fileID: 1264438802}
   - component: {fileID: 1264438801}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Plataforma
-  m_TagString: Untagged
+  m_TagString: Chao
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1083,9 +1083,9 @@ GameObject:
   - component: {fileID: 1366776117}
   - component: {fileID: 1366776116}
   - component: {fileID: 1366776115}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Plataforma (2)
-  m_TagString: Untagged
+  m_TagString: Chao
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1221,9 +1221,9 @@ GameObject:
   - component: {fileID: 1680076398}
   - component: {fileID: 1680076397}
   - component: {fileID: 1680076396}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Chao
-  m_TagString: Untagged
+  m_TagString: Chao
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1521,9 +1521,9 @@ GameObject:
   - component: {fileID: 1730507609}
   - component: {fileID: 1730507608}
   - component: {fileID: 1730507607}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Plataforma (1)
-  m_TagString: Untagged
+  m_TagString: Chao
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1659,9 +1659,9 @@ GameObject:
   - component: {fileID: 2051591302}
   - component: {fileID: 2051591301}
   - component: {fileID: 2051591300}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Chao2
-  m_TagString: Untagged
+  m_TagString: Chao
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1796,7 +1796,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2091748752}
   - component: {fileID: 2091748751}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Chao (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
