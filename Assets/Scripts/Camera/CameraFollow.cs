@@ -33,6 +33,11 @@ public class CameraFollow : MonoBehaviour
     private bool finalDaFase = false;
     private Transform objetivoFinal;
 
+    // controle da câmera na morte
+    private bool seguirJogador = true;
+    private bool focarPosicao = false;
+    private Vector3 posicaoFoco;
+
     void Start()
     {
         if (player != null)
@@ -43,15 +48,30 @@ public class CameraFollow : MonoBehaviour
 
     void LateUpdate()
     {
+        // CONTROLE DA CÂMERA NA MORTE
+        if (!seguirJogador)
+        {
+            if (focarPosicao)
+            {
+                Vector3 destino = Vector3.SmoothDamp(
+                    transform.position,
+                    posicaoFoco,
+                    ref velocity,
+                    1f / smoothSpeed
+                );
+
+                transform.position = destino;
+            }
+
+            return;
+        }
+
         if (player == null)
             return;
 
         Vector3 posicaoDesejada = transform.position;
 
-        
         // FINAL DA FASE
-        
-
         if (finalDaFase && objetivoFinal != null)
         {
             Vector3 meio = (player.position + objetivoFinal.position) / 2f;
@@ -61,10 +81,7 @@ public class CameraFollow : MonoBehaviour
         }
         else
         {
-            
             // MOVIMENTO HORIZONTAL
-            
-
             float diferencaX = player.position.x - transform.position.x;
 
             if (Mathf.Abs(diferencaX) > deadZoneX)
@@ -79,10 +96,7 @@ public class CameraFollow : MonoBehaviour
                 posicaoDesejada.x = player.position.x + (direcao * lookAhead);
             }
 
-            
             // MOVIMENTO VERTICAL
-            
-
             float diferencaY = player.position.y - transform.position.y;
 
             if (Mathf.Abs(diferencaY) > deadZoneY)
@@ -90,20 +104,14 @@ public class CameraFollow : MonoBehaviour
                 posicaoDesejada.y = player.position.y;
             }
 
-            
             // QUEDA
-           
-
             if (playerRb != null && playerRb.linearVelocity.y < 0)
             {
                 posicaoDesejada.y += fallOffset;
             }
         }
 
-        
         // LIMITES
-        
-
         Camera cam = GetComponent<Camera>();
 
         float altura = cam.orthographicSize;
@@ -121,10 +129,7 @@ public class CameraFollow : MonoBehaviour
             limiteSuperior - altura
         );
 
-       
         // FOLLOW SUAVE
-        
-
         Vector3 novaPosicao = Vector3.SmoothDamp(
             transform.position,
             posicaoDesejada,
@@ -139,10 +144,30 @@ public class CameraFollow : MonoBehaviour
         );
     }
 
-   
-    // SHAKE
-    
+    // PARA DE SEGUIR O JOGADOR
+    public void PararDeSeguir()
+    {
+        seguirJogador = false;
+        focarPosicao = false;
+        velocity = Vector3.zero;
+    }
 
+    // FOCAR NO LOCAL DA MORTE
+    public void FocarNaPosicao(Vector3 posicao)
+    {
+        seguirJogador = false;
+        focarPosicao = true;
+
+        posicaoFoco = new Vector3(
+            posicao.x,
+            posicao.y,
+            transform.position.z
+        );
+
+        velocity = Vector3.zero;
+    }
+
+    // SHAKE
     public void Shake()
     {
         StartCoroutine(ShakeCamera());
@@ -173,10 +198,7 @@ public class CameraFollow : MonoBehaviour
         transform.localPosition = posicaoOriginal;
     }
 
-    
     // FREEZE FRAME
-    
-
     public IEnumerator FreezeFrame(float tempo)
     {
         Time.timeScale = 0.05f;
@@ -186,10 +208,7 @@ public class CameraFollow : MonoBehaviour
         Time.timeScale = 1f;
     }
 
-    
     // FINAL DA FASE
-    
-
     public void MostrarFinal(Transform objetivo)
     {
         objetivoFinal = objetivo;
